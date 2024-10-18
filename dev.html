@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>閃炫記錄工具</title>
+     <!-- 引入Google Fonts中的Creepster字體 -->
+     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <style>
+         body {
+            font-family: 'Arial', 'Creepster', sans-serif;
+            background-color: #2c2c2c; /* 深色背景 */
+            margin: 0;
+            padding: 0;
+            color: #FFFFFF; /* 白色文字 */
+            /*background-image: url(''); /* 萬聖節背景圖 */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #FF7518;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Creepster', cursive;
+            position: relative;
+        }
+        
+        header h2 {
+            margin: 0;
+            font-size: 36px;
+            text-shadow: 2px 2px #FF7518;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        /* 表單樣式 */
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(255, 117, 24, 0.5);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #FF7518;
+        }
+
+        p {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #FF7518;
+        }
+
+        p.title {
+            color: #FFA500;
+        }
+
+        h3.title {
+            color: #FFA500;
+            text-align: center;
+        }
+        /* 方塊類型 (b 標籤) */
+        b {
+        color: #FF7518; /* 橘色字體 */
+        }
+
+        /* #提示字 (h 標籤) */
+        h {
+        color: #ffa500; /* 橘色字體 */
+        }
+
+
+        select,
+        input[type="number"],
+        input[type="text"],
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #FF7518;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: #3c3c3c;
+            color: #FFFFFF;
+        }
+
+        .shape-options {
+            margin-bottom: 15px;
+        }
+
+        .shape-options label {
+            margin-right: 20px;
+            font-weight: normal;
+        }
+
+        .shape-options input[type="radio"] {
+            display: none;
+        }
+
+        .shape-options label {
+            display: inline-block;
+            cursor: pointer;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .shape-options label:hover {
+            background-color: #b22735;
+        }
+
+        .shape-options input[type="radio"]:checked+label {
+            background-color: #FF7518;
+            color: #fff;
+        }
+
+        /* 按鈕樣式 */
+        button.calculate {
+            background-color: #FF7518;
+            color: #FFFFFF;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button.calculate:hover {
+            background-color: #e06b18;
+        }
+
+        button.undo {
+            background-color: #b22735;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button.undo:hover {
+            background-color: #a21d2a;
+            /* 深红色 */
+        }
+
+        button.del {
+            width: 60px;
+            background-color: #800080;
+            color: #FFFFFF;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button.del:hover {
+            background-color: #660066;
+        }
+
+        /* 加載中按鈕樣式 */
+        button.loading {
+            background-color: #6c757d;
+            cursor: not-allowed;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        button.loading:after {
+            content: '';
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            margin-left: 10px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+
+        #output {
+            max-width: 620px;
+            margin: 20px auto;
+            height: 200px;
+            padding: 10px;
+            background-color: #2c2c2c; /* 深色背景 */
+            color: #ffa500; /* 橘色字體 */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);/* 柔和橘色光暈 */
+            overflow-y: scroll;
+            text-align: left;
+            border: 2px solid #ffa500;
+            /* 添加邊框以增加可見性 */
+        }
+
+
+        .center-text {
+            text-align: center;
+        }
+        /* 錯誤訊息樣式 */
+        .error-message {
+            color: #FF6347;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        /* 表格樣式 */
+        table {
+            max-width: 800px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(255, 117, 24, 0.5);
+            border: 2px solid #FF7518;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #555;
+            text-align: center;
+        }
+
+        th {
+            background-color: #FF7518;
+            color: #FFFFFF;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #4d4d4d;
+        }
+
+        tbody tr:hover {
+            background-color: #5c5c5c;
+        }
+
+        /* 切換按鈕容器 */
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 44px;
+        }
+
+        .toggle-input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            cursor: pointer;
+            border-radius: 34px;
+            transition: background-color 0.3s;
+        }
+
+
+        .toggle-label:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-input:checked + .toggle-label {
+            background-color: #4caf50;
+        }
+
+        .toggle-input:checked + .toggle-label:before {
+            transform: translateX(26px);
+        }
+        
+        .left-side {
+            float: left;
+            width: 45%;
+            box-sizing: border-box;
+            /* 包含內邊距和邊框在內的寬度 */
+        }
+
+        .right-side {
+            float: right;
+            width: 45%;
+            box-sizing: border-box;
+            min-width: 0;
+            /* 使得左右內容能夠被壓縮到最小寬度 */
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .left-side {
+            flex: 1;
+        }
+
+        .right-side {
+            flex: 1;
+        }
+
+        footer {
+            /* background-color: #333; */
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        /* 在螢幕寬度小於某個閾值時，進行排列變更 */
+        @media screen and (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-side,
+            .right-side {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h2 title="網頁寬度小於1100px時自動變成一排">閃炫記錄工具</h2>     
+    </header>
+
+    <div class="container">
+        <div class="left-side">
+            <form id="configForm">
+                <!---<p title="像這樣" class="title">滑鼠停留在文字上時會顯示功能</p>--->
+                <label for="account" title="帳號切換">帳號:</label>
+                <select id="account" name="account" onchange="updateStartCount()" title="帳號切換">
+                    <option value="帳號1">帳號1</option>
+                    <option value="帳號2">帳號2</option>
+                    <option value="帳號3">帳號3</option>
+                    <option value="帳號4">帳號4</option>
+                    <option value="帳號5">帳號5</option>
+                    <option value="帳號6">帳號6</option>
+                </select><br>
+                <input type="text" id="note" name="note" placeholder="筆記空間" title="無特殊功能單純筆記">
+                <label for="server" title="請選擇伺服器">伺服器:</label>
+                <select id="server" name="server" onchange="updateStartCount()" title="請選擇伺服器">
+                    <option value="艾麗亞">艾麗亞</option>
+                    <option value="普力特">普力特</option>
+                    <option value="琉德">琉德</option>
+                    <option value="優依娜">優依娜</option>
+                    <option value="愛麗西亞">愛麗西亞</option>
+                    <option value="殺人鯨">殺人鯨</option>
+                </select><br>
+                <b title="閃炫1:50 結合1:105">方塊類型:</b>
+                <div class="shape-options">
+                    <input type="radio" id="flashy" name="shape" value="閃炫" onchange="updateStartCount()">
+                    <label for="flashy">閃炫</label>
+                    <input type="radio" id="combined" name="shape" value="結合" onchange="updateStartCount()">
+                    <label for="combined">結合</label>
+                    <input type="radio" id="legend" name="shape" value="傳說卷" onchange="updateStartCount()">
+                    <label for="legend">傳說卷</label>
+                    <input type="radio" id="scissors" name="shape" value="剪刀" onchange="updateStartCount()">
+                    <label for="scissors">剪刀</label>
+                </div>
+                <h for="" title="">#可以只儲存起始數量</h>
+                <label for="start" title="最下方表格中有儲存過的將會自動填寫">起始數量:</label>
+                <input type="number" id="start" name="start" min="0"><br>
+                <label for="end" title="可以直接enter了">最終數量:</label>
+                <input type="number" id="end" name="end" min="0"><br>
+                <button type="button" class="calculate" onclick="calculate()" title="計算">計算</button>
+                <button type="button" class="undo" onclick="undo()" title="可以往回五步">上一步</button>
+            </form>
+        </div>
+
+        </br>
+
+        <div class="right-side">
+            <form id="configForm">
+                <div id="output" title="限制200行"></div>
+                <table id="statsTable">
+                    <thead>
+                        <tr>
+                            <th>伺服器</th>
+                            <th>帳號</th>
+                            <th>方塊類型</th>
+                            <th>起始數量</th>
+                            <th>最終數量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <div>
+                    <h for="" title="">排序啟動</h>
+                    <div class="toggle-switch">
+                    <input type="checkbox" id="toggle" class="toggle-input">
+                    <label for="toggle" class="toggle-label"></label>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <footer>
+        <div class="center-text">
+            <h3 title="localStorage本機儲存 五天後開啟網頁會自動刪除舊的資料" class="title">網頁重開會有紀錄</h3>
+            <h3 title="" class="title">刪除全部資料按這顆按鈕</h3>
+            <button type="button" class="del" onclick="delLocalStorage()" title="為了防止誤觸最終數量按d或D這顆才會生效">刪除全部</button>
+        </div>
+    </footer>
+
+
+    <script>
+        // 本地資料與表格資料共用空間
+        var serverStats = {};
+        var textData;
+        var setButton = false;
+        //console.log("謝謝阿炭! 那個頭貼我超愛!");
+
+        //-----------------------本機儲存類-----------------------\\
+        window.onload = function () {//讀取網頁存取過的資料
+            loadFromLocalStorage();
+        };
+
+        //讀取網頁存取過的資料
+        function loadFromLocalStorage() {
+            var storedStats = localStorage.getItem('serverStats');
+            if (storedStats) {
+                serverStats = JSON.parse(storedStats);
+                updateStatsTable();
+            }
+
+            var textx = (localStorage.getItem('textData'));
+
+            if (textx) {
+                var outputDiv = document.getElementById("output");
+                //console.log(textx);
+                outputDiv.innerHTML = textx;
+            }
+
+        }
+
+        //更新
+        function updateLocalStorage() {
+            localStorage.setItem('serverStats', JSON.stringify(serverStats));
+            var text = (document.getElementById("output"));
+            //console.log((text.innerHTML));
+            localStorage.setItem('textData', (text.innerHTML));
+        }
+        //檢查localStorage時間戳章超過五天會自動刪除
+        function checkLocalStorageExpiration() {
+            var storedTime = localStorage.getItem('storageTimestamp');//檢查時要改小
+            if (storedTime) {
+                var currentTime = new Date().getTime();
+                var sixDaysInMillis = 5 * 24 * 60 * 60 * 1000;//檢查是否過五天
+
+                if (currentTime - storedTime > sixDaysInMillis) {
+                    //console.log(currentTime - storedTime);
+                    localStorage.removeItem('textData');
+                    localStorage.removeItem('serverStats');
+                    localStorage.removeItem('storageTimestamp');
+                    localStorage.setItem('storageTimestamp', new Date().getTime().toString());
+                }
+            } else {
+                localStorage.setItem('storageTimestamp', new Date().getTime().toString());
+            }
+        }
+        checkLocalStorageExpiration();//執行
+        function delLocalStorage() {//刪除
+            if (setButton) {
+                localStorage.removeItem('serverStats');
+                localStorage.removeItem('storageTimestamp');
+                serverStats = {};
+                localStorage.setItem('storageTimestamp', new Date().getTime().toString());
+
+                document.getElementById("start").value = null;
+
+                var outputDiv = document.getElementById("output");
+                var serverConfig = ""
+                outputDiv.innerHTML = serverConfig;
+                var lines = outputDiv.innerHTML.split("<br>");
+                updateStatsTable();
+                updateLocalStorage();
+
+                setButton = false;
+            }
+            else {
+                alert("有防呆機制! 請在最終數量按下D或d再按下這顆按鈕!");
+                return;
+            }
+        }
+        //-----------------------本機儲存類-----------------------\\
+
+        //-----------------------回上一步類-----------------------\\
+        var originalServerStats1;
+        var originalServerStats2;
+        var originalServerStats3;
+        var originalServerStats4;
+        var originalServerStats5;
+        var UndoCount = 1;
+        function undo() {
+            switch (UndoCount) {
+                case 1:
+                    if (originalServerStats1) {
+                        serverStats = originalServerStats1; // 恢復數據
+                        updateStatsTable(); // 更新
+                        updateLocalStorage(); // 更新
+                        updateStartCount();
+                        setUndoOutputText();
+                    }
+                    UndoCount += 1;
+                    break;
+                case 2:
+                    if (originalServerStats2) {
+                        serverStats = originalServerStats2; // 恢復數據
+                        updateStatsTable(); // 更新
+                        updateLocalStorage(); // 更新
+                        updateStartCount();
+                        setUndoOutputText();
+                    }
+                    UndoCount += 1;
+                    break;
+                case 3:
+                    if (originalServerStats3) {
+                        serverStats = originalServerStats3; // 恢復數據
+                        updateStatsTable(); // 更新
+                        updateLocalStorage(); // 更新
+                        updateStartCount();
+                        setUndoOutputText();
+                    }
+                    UndoCount += 1;
+                    break;
+
+                case 4:
+                    if (originalServerStats4) {
+                        serverStats = originalServerStats4; // 恢復數據
+                        updateStatsTable(); // 更新
+                        updateLocalStorage(); // 更新
+                        updateStartCount();
+                        setUndoOutputText();
+                    }
+                    UndoCount += 1;
+                    break;
+
+                case 5:
+                    if (originalServerStats5) {
+                        serverStats = originalServerStats5; // 恢復數據
+                        updateStatsTable(); // 更新
+                        updateLocalStorage(); // 更新
+                        updateStartCount();
+                        setUndoOutputText();
+                    }
+                    UndoCount += 1;
+                    break;
+
+                default:
+                    alert("最多五步!");
+                    break;
+            }
+
+
+        }
+        function setUndoOutputText() {
+            var outputDiv = document.getElementById("output");
+            var serverConfig = "已回到上一步！"
+            var currentConfig = outputDiv.innerHTML;
+            outputDiv.innerHTML = serverConfig + "<br>" + currentConfig;
+            var lines = outputDiv.innerHTML.split("<br>");
+            if (lines.length > 200) {
+                lines.pop(); // 刪除最後一行
+                outputDiv.innerHTML = lines.join("<br>");
+            }
+            localStorage.setItem('textData', outputDiv.innerHTML);
+        }
+        //-----------------------回上一步類-----------------------\\
+
+        //-----------------------表格排序類-----------------------\\
+        var toggleBotton = false;
+        document.getElementById('toggle').addEventListener('change', function() {
+            if (this.checked) {
+                //console.log('Toggle is ON');
+                toggleBotton = true;
+                updateStatsTable();
+                // 這裡可以添加其他操作，例如設定某個值或觸發某個事件
+            } else {
+                //console.log('Toggle is OFF');
+                toggleBotton = false;
+                updateStatsTable();
+                // 這裡可以添加其他操作，例如設定某個值或觸發某個事件
+            }
+        });
+
+
+        // 按固定順序排序對象的函數
+        function sortObjectByKeys(obj, order) {
+            const sortedObj = {};
+            order.forEach(key => {
+                if (obj[key] !== undefined) {
+                    sortedObj[key] = obj[key];
+                }
+            });
+            // 添加未列出的建
+            Object.keys(obj).forEach(key => {
+                if (!sortedObj[key]) {
+                    sortedObj[key] = obj[key];
+                }
+            });
+            return sortedObj;
+        }
+        //排序
+        function sortTableByServerOrder(tableData) {
+            //排序順序
+            const serverOrder = ["艾麗亞", "普力特", "琉德", "優依娜", "愛麗西亞", "殺人鯨"];
+            const shapeOrder = ["閃炫", "結合", "傳說卷", "剪刀"];
+
+        
+
+            let sortedServerStats = sortObjectByKeys(tableData, serverOrder);
+
+            for (let server in sortedServerStats) {
+                for (let account in sortedServerStats[server]) {
+                    sortedServerStats[server][account] = sortObjectByKeys(sortedServerStats[server][account], shapeOrder);
+                }
+            }
+            return sortedServerStats;
+
+        }
+        //-----------------------表格排序類-----------------------\\
+
+        //-----------------------按鈕控制類-----------------------\\
+        //監聽鍵盤在最終數量按下ENTER時會啟動計算按鈕
+        var endCountInput = document.getElementById("end");
+        endCountInput.addEventListener("keyup", function (event) {
+            // 檢查是否按下enter
+            if (event.keyCode === 13) {
+                // 執行函數
+                calculate();
+            }
+            if (event.key === 'D' || event.key === 'd') {
+                setButton = true;
+            }
+        });
+
+        function undoSave() {
+            //上一步資料存取
+            if (originalServerStats4) {
+                originalServerStats5 = JSON.parse(JSON.stringify(originalServerStats4));
+            }
+            if (originalServerStats3) {
+                originalServerStats4 = JSON.parse(JSON.stringify(originalServerStats3));
+            }
+            if (originalServerStats2) {
+                originalServerStats3 = JSON.parse(JSON.stringify(originalServerStats2));
+            }
+            if (originalServerStats1) {
+                originalServerStats2 = JSON.parse(JSON.stringify(originalServerStats1));
+            }
+            originalServerStats1 = JSON.parse(JSON.stringify(serverStats));
+            UndoCount = 1;
+        }
+
+        //價格計算
+        function Price(shape, startCount, endCount) {
+            if (shape === "閃炫") {
+                price = (startCount - endCount) * 54;
+            } else if (shape === "結合") {
+                price = (startCount - endCount) * 108;
+            } else if (shape === "傳說卷") {
+                price = (endCount) * 100;
+            } else if (shape === "剪刀") {
+                price = (endCount) * 150;
+            }
+
+            return price;
+        }
+
+        function outputSave(server, account, shape, startCount, endCount) {
+            //時間
+            var currentTime = new Date();
+            var formattedTime = currentTime.toLocaleString('zh-TW', { hour: 'numeric', minute: 'numeric', hour12: false });
+
+            //文字記錄
+            var outputDiv = document.getElementById("output");
+            if (shape === "傳說卷" || shape === "剪刀") {
+                var serverConfig = " 時間: " + formattedTime + " " + server + " - " + account + " - " + shape + " → " + endCount + " 價格: " + price;
+            } else {
+
+                var serverConfig = " 時間: " + formattedTime + " " + server + " - " + account + " - " + shape + " : " + startCount + " → " + endCount + " 顆數: " + (startCount - endCount) + " 價格: " + price;
+            }
+            var currentConfig = outputDiv.innerHTML;
+            outputDiv.innerHTML = serverConfig + "<br>" + currentConfig;
+            var lines = outputDiv.innerHTML.split("<br>");
+
+
+            if (lines.length > 200) {
+                lines.pop(); // 刪除最後一行
+                outputDiv.innerHTML = lines.join("<br>");
+            }
+        }
+
+        function serverStateSave(server, account, shape, startCount, endCount) {
+            if (!serverStats[server]) {
+                serverStats[server] = {};
+            }
+            if (!serverStats[server][account]) {
+                serverStats[server][account] = {};
+            }
+            if (!serverStats[server][account][shape]) {
+                if (shape === "傳說卷" || shape === "剪刀") {
+                    //console.log("1")
+                    serverStats[server][account][shape] = { maxStartCount: 0, minEndCount: endCount };
+                } else {
+                    serverStats[server][account][shape] = { maxStartCount: startCount, minEndCount: endCount };
+                }
+
+            } else {
+                if (shape === "傳說卷" || shape === "剪刀") {
+                    //console.log("2")
+                    serverStats[server][account][shape].maxStartCount = 0;
+                    serverStats[server][account][shape].minEndCount += endCount;
+                } else {
+                    serverStats[server][account][shape].maxStartCount = Math.max(serverStats[server][account][shape].maxStartCount, startCount);
+                    serverStats[server][account][shape].minEndCount = Math.min(serverStats[server][account][shape].minEndCount, endCount);
+                }
+
+            }
+        }
+
+        //按下計算所需要處理的東西
+        function calculate() {
+            //讀取值
+            var account = document.getElementById("account").value;
+            var server = document.getElementById("server").value;
+            var shape = document.querySelector('input[name="shape"]:checked').value;
+            var startCount = parseInt(document.getElementById("start").value);
+            var endCount = parseInt(document.getElementById("end").value);
+            //儲存上一步
+            undoSave();
+
+            //保護
+            if (shape === "閃炫" | shape === "結合") {
+                if (startCount <= endCount) {
+                    alert("初始顆數必須大於最終數量");
+                    return;
+                }
+                if (isNaN(startCount)) { // | startCount < 0
+                    alert("請確認起始數量。");
+                    return;
+                }
+            }
+            if (isNaN(endCount)) { // | endCount < 0
+                //alert("請確認最終數量。");
+                //return;
+                endCount = startCount;
+            }
+
+            //計算
+            var price = Price(shape, startCount, endCount);
+
+            //outputConsole
+            outputSave(server, account, shape, startCount, endCount);
+
+            // 更新 serverState
+            serverStateSave(server, account, shape, startCount, endCount);
+
+            //更新本地處存
+            updateLocalStorage();
+
+            //更新Table
+            updateStatsTable();
+
+            //設定起始數量與最終數量
+            if (shape === "閃炫" || shape === "結合") {
+                document.getElementById("start").value = endCount;
+            } else {
+                document.getElementById("start").value = "";
+            }
+
+            document.getElementById("end").value = "";
+        }
+        //-----------------------按鈕控制類-----------------------\\
+
+        //-----------------------狀態更新類-----------------------\\
+        //更新Table
+        function updateStatsTable() {
+            var table = document.getElementById("statsTable");
+            var tbody = table.getElementsByTagName('tbody')[0];
+            tbody.innerHTML = '';
+
+            var tableStats = serverStats;
+            if (toggleBotton){
+                tableStats = sortTableByServerOrder(tableStats);
+            }
+            
+
+            for (var server in tableStats) {
+                for (var account in tableStats[server]) {
+                    for (var shape in tableStats[server][account]) {
+                        var row = tbody.insertRow();
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        var cell3 = row.insertCell(2);
+                        var cell4 = row.insertCell(3);
+                        var cell5 = row.insertCell(4);
+                        cell1.innerHTML = server;
+                        cell2.innerHTML = account;
+                        cell3.innerHTML = shape;
+                        cell4.innerHTML = tableStats[server][account][shape].maxStartCount;
+                        cell5.innerHTML = tableStats[server][account][shape].minEndCount;
+                    }
+                }
+            }
+        }
+
+
+        //切換時輸入起始數量
+        function updateStartCount() {
+            var account = document.getElementById("account").value;
+            var server = document.getElementById("server").value;
+            var shape = document.querySelector('input[name="shape"]:checked').value;
+
+            if (serverStats[server] && serverStats[server][account] && serverStats[server][account][shape]) {
+                var endCount = serverStats[server][account][shape].minEndCount;
+                document.getElementById("start").value = endCount;
+            }
+            else {
+                document.getElementById("start").value = null;
+            }
+        }
+        //-----------------------狀態更新類-----------------------\\
+
+
+        //離開網頁時詢問
+        window.onbeforeunload = function () {
+            return "Are you sure you want to leave?";
+        };
+    </script>
+</body>
+
+</html>
